@@ -7,6 +7,11 @@ const basicColumns = [
   ['1', '222222222222222222222222222222222', '3'],
 ]
 
+const customSameColumns = [
+  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+  ['1', '3', '3'],
+]
+
 // 基础用法
 function BasicDemo() {
   const [visible, setVisible] = useState(false)
@@ -72,6 +77,49 @@ function RenderChildrenDemo() {
   )
 }
 
+function RenderSameItem() {
+  const [visible, setVisible] = useState(false)
+  const [value, setValue] = useState<(string | null)[]>([])
+  const renderColumns = () => {
+    return customSameColumns.map(item => {
+      return item.map((item, index) => {
+        return {
+          index,
+          realValue: item,
+          label: item,
+          value: `${item}${index}`,
+        }
+      })
+    })
+  }
+  return (
+    <Space align='center'>
+      <Button
+        onClick={() => {
+          setVisible(true)
+        }}
+      >
+        选择
+      </Button>
+      <Picker
+        columns={renderColumns}
+        visible={visible}
+        onClose={() => {
+          setVisible(false)
+        }}
+        onConfirm={(val, extend) => {
+          const { items } = extend || {}
+          setValue(items.map(item => item?.value || null))
+        }}
+        onSelect={(val, extend) => {
+          console.log('onSelect', val, extend.items)
+        }}
+      />
+      {value ? value.join('-') : '未选择'}
+    </Space>
+  )
+}
+
 export default () => {
   return (
     <>
@@ -94,6 +142,9 @@ export default () => {
         >
           弹出 Picker
         </Button>
+      </DemoBlock>
+      <DemoBlock title='存在相同值'>
+        <RenderSameItem />
       </DemoBlock>
     </>
   )
